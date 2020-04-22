@@ -5,8 +5,19 @@ An Unreal Engine 4 Plugin that adds input device support for Nintendo Switch con
 * Button Presses
 * Player LED Control
 
-### Credits / Thanks
-[dukeNukem's Reverse Engineering](https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/tree/master/joycon_reader)
+## To Do
+* Button Releases
+* Joycon Rotation
+* Joycon Battery
+* Joycon Acceleration
+* Send Rumble Commands
+* IR Sensor
+* NFC Reader?
+* Combining Joycons
+* Pro Controller Support
+
+## Credits / Thanks
+[dukeNukem's Reverse Engineering](https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/)
 
 [SwitchBrew - Joy-Con](https://switchbrew.org/wiki/Joy-Con)
 
@@ -14,6 +25,6 @@ An Unreal Engine 4 Plugin that adds input device support for Nintendo Switch con
 
 [signal11's hidapi](https://github.com/signal11/hidapi/)
 
-[jpdante's Joycon Plugin](https://github.com/jpdante/JoyconInput )
+[jpdante's Joycon Plugin](https://github.com/jpdante/JoyconInput)
 
 [fossephate's Joycon Driver](https://github.com/fossephate/JoyCon-Driver)

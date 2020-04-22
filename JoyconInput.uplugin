@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"FriendlyName": "JoyconInput",
+	"Description": "Input Device Support for Nintendo Switch Controllers",
+	"Category": "Input Devices",
+	"CreatedBy": "Lilac",
+	"CreatedByURL": "https://github.com/Liliowy/JoyconInput",
+	"DocsURL": "https://github.com/Liliowy/JoyconInput",
+	"MarketplaceURL": "https://www.unrealengine.com/marketplace/",
+	"SupportURL": "https://github.com/Liliowy/JoyconInput/issues",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "JoyconInput",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms":  ["Win64", "Win32"]
+		}
+	]
+}
