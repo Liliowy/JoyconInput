@@ -58,10 +58,10 @@ struct FRightJoyconButton
 
 	// D-Pad Buttons - These are also different values on combined controllers.
 	// Y is Up when the controller is not combined, etc.
-	static const FKey Y_Up; // D-Pad Y
-	static const FKey X_Right; // D-Pad X
-	static const FKey A_Down; // D-Pad A
-	static const FKey B_Left; // D-Pad B
+	static const FKey Up; // D-Pad Y
+	static const FKey Right; // D-Pad X
+	static const FKey Down; // D-Pad A
+	static const FKey Left; // D-Pad B
 
 	// Special Buttons
 	static const FKey Plus; // + Button
