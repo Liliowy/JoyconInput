@@ -69,10 +69,13 @@ public:
 	}
 
 	// Returns the button that was previously pressed.
-	int GetLastPressedButton() {
-		return LastPressedButton;
+	int GetPreviousButton() {
+		return PreviousButton;
 	}
 
+	void SetPreviousButton(int InPreviousButton) {
+		this->PreviousButton = InPreviousButton;
+	}
 private:
 	// A pointer to the HID Device.
 	hid_device* Device;
@@ -81,7 +84,7 @@ private:
 	EControllerType ControllerType;
 
 	// The button that was previously pressed. Used for holding buttons.
-	int LastPressedButton;
+	int PreviousButton;
 
 	unsigned char Buffer[0x40];
 };

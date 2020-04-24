@@ -5,6 +5,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogJoyconInputDevice, Log, All);
 #define LOCTEXT_NAMESPACE "JoyconInputDevice"
 
 #define DEBUG true
+#define BYTES_TO_READ 0x41
 
 // Magic Numbers & Button IDs
 #define BLUETOOTH 0
@@ -308,6 +309,10 @@ FJoyconInputDevice::FJoyconInputDevice(const TSharedRef<FGenericApplicationMessa
 	EKeys::AddKey(FKeyDetails(FProControllerButton::LeftThumbstickAxisX, LOCTEXT("ProController_LeftThumbstickAxisX", "Pro Controller - Left Thumbstick Axis X"), FKeyDetails::GamepadKey, NAME_Pro));
 	EKeys::AddKey(FKeyDetails(FProControllerButton::RightThumbstickAxisY, LOCTEXT("ProController_RightThumbstickAxisY", "Pro Controller - Right Thumbstick Axis Y"), FKeyDetails::GamepadKey, NAME_Pro));
 	EKeys::AddKey(FKeyDetails(FProControllerButton::RightThumbstickAxisX, LOCTEXT("ProController_RightThumbstickAxisX", "Pro Controller - Right Thumbstick Axis X"), FKeyDetails::GamepadKey, NAME_Pro));
+
+#ifdef DEBUG
+	UE_LOG(LogJoyconInputDevice, Log, TEXT("Inputs Mapped."));
+#endif
 }
 
 void FJoyconInputDevice::Tick(float DeltaTime)
@@ -317,7 +322,165 @@ void FJoyconInputDevice::Tick(float DeltaTime)
 
 void FJoyconInputDevice::SendControllerEvents()
 {
+	if (!FJoyconInputModule::GetJoycons().IsValidIndex(0)) return;
+	
+	int index = 0;
+	for (UJoycon* Joycon : FJoyconInputModule::GetJoycons()) {
+		if (Joycon->GetDevice() == nullptr) return;
+		if (HandleInput(index, Joycon)) break;
+		index++;
+	}
+}
 
+bool FJoyconInputDevice::HandleInput(int Index, UJoycon* Joycon)
+{
+	unsigned char Packet[BYTES_TO_READ];
+	hid_set_nonblocking(Joycon->GetDevice(), 1);
+	memset(Packet, 0, BYTES_TO_READ);
+	hid_read(Joycon->GetDevice(), Packet, BYTES_TO_READ);
+
+#ifdef DEBUG
+	// Allows the packet to be easily read, adding a colon to separate each bit.
+	FString PacketStr;
+
+	for (size_t i = 0; i < sizeof(Packet) - 1; i++) {
+		int Bit = Packet[i];
+		FString ToAppend = FString::FromInt(Bit);
+		if (i != 0) PacketStr.Append(":");
+		PacketStr.Append(ToAppend);
+	}
+
+	UE_LOG(LogJoyconInputDevice, Log, TEXT("Packet Info: %s"), *PacketStr);
+#endif
+
+	if (Packet[BLUETOOTH] != BLUETOOTH_BUTTON) return;
+	if (Joycon->GetControllerType() == EControllerType::Left) return HandleLeftJoyconInput(Index, Joycon, Packet);
+	if (Joycon->GetControllerType() == EControllerType::Right) return HandleRightJoyconInput(Index, Joycon, Packet);
+	if (Joycon->GetControllerType() == EControllerType::Combined) return HandleCombinedJoyconInput(Index, Joycon, Packet);
+	if (Joycon->GetControllerType() == EControllerType::Pro) return HandleProControllerInput(Index, Joycon, Packet);
+}
+
+bool FJoyconInputDevice::HandleLeftJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet)
+{
+#ifdef DEBUG
+	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Left Joycon Input"));
+#endif
+	if (Packet[GAME_BUTTON] == LEFT_JOYCON_SL) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_SL) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ShoulderLeft.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ShoulderLeft.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_SL);
+		}
+
+		return true;
+	}
+
+	if (Packet[GAME_BUTTON] == LEFT_JOYCON_SR) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_SR) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ShoulderRight.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ShoulderRight.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_SR);
+		}
+
+		return true;
+	}
+
+	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_UP) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_UP) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Up.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Up.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_UP);
+		}
+
+		return true;
+	}
+
+	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_RIGHT) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_RIGHT) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Right.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Right.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_RIGHT);
+		}
+
+		return true;
+	}
+
+	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_DOWN) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_DOWN) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Down.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Down.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_DOWN);
+		}
+
+		return true;
+	}
+
+	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_LEFT) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_LEFT) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Left.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Left.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_LEFT);
+		}
+
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_ZL) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_ZL) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Trigger.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Trigger.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_ZL);
+		}
+
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_L) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_L) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Bumper.GetFName(), Index, false);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Bumper.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_L);
+		}
+
+		return true;
+	}
+}
+
+bool FJoyconInputDevice::HandleRightJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet)
+{
+#ifdef DEBUG
+	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Right Joycon Input"));
+#endif
+}
+
+bool FJoyconInputDevice::HandleCombinedJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet)
+{
+#ifdef DEBUG
+	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Combined Joycon Input"));
+#endif
+}
+
+bool FJoyconInputDevice::HandleProControllerInput(int Index, UJoycon* Joycon, uint8_t* Packet)
+{
+#ifdef DEBUG
+	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Pro Controller Input"));
+#endif
 }
 
 void FJoyconInputDevice::SetMessageHandler(const TSharedRef<FGenericApplicationMessageHandler>& InMessageHandler)

@@ -70,9 +70,8 @@ void UJoyconFunctionLibrary::DisconnectJoycons(bool& Success)
 	UE_LOG(LogJoyconFunctionLibrary, Log, TEXT("Disconnecting Joycons..."));
 #endif
 
-	for (UJoycon* Joycon : FJoyconInputModule::GetJoycons()) {
-		hid_close(Joycon->GetDevice());
-	}
+	for (UJoycon* Joycon : FJoyconInputModule::GetJoycons()) hid_close(Joycon->GetDevice());
+	Success = (hid_exit() == 0);
 }
 
 void UJoyconFunctionLibrary::GetJoycon(int32 ControllerId, UJoycon*& Joycon)
@@ -84,18 +83,3 @@ void UJoyconFunctionLibrary::GetJoycons(TArray<UJoycon*>& Joycons)
 {
 	Joycons = FJoyconInputModule::GetJoycons();
 }
-/*
-UFUNCTION(BlueprintCallable, Category = "JoyconInput")
-	static void ConnectJoycons(bool& Success, int32& Count);
-
-	// Disconnects from the Joycon devices.
-	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
-	static void DisconnectJoycons(bool& Success);
-
-	// Returns a Joycon from the given Id.
-	UFUNCTION(BlueprintPure, Category = "JoyconInput")
-	static void GetJoycon(int32 ControllerId, UJoycon*& Joycon);
-
-	// Returns all connected Joycons.
-	UFUNCTION(BlueprintPure, Category = "JoyconInput")
-	static void GetJoycons(TArray<UJoycon*>& Joycons);*/

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "JoyconInput.h"
 #include "JoyconInputState.h"
 #include "InputDevice/Public/IInputDevice.h"
 #include "OutputDevice.h"
@@ -15,8 +16,15 @@ class FJoyconInputDevice : public IInputDevice
 	virtual void SetChannelValue(int32 ControllerId, FForceFeedbackChannelType ChannelType, float Value) override;
 	virtual void SetChannelValues(int32 ControllerId, const FForceFeedbackValues& Values) override;
 
+
 	virtual ~FJoyconInputDevice();
 
 private:
+	bool HandleInput(int Index, UJoycon* Joycon);
+	bool HandleLeftJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet);
+	bool HandleRightJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet);
+	bool HandleCombinedJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet);
+	bool HandleProControllerInput(int Index, UJoycon* Joycon, uint8_t* Packet);
+
 	TSharedRef<FGenericApplicationMessageHandler> MessageHandler;
 };
