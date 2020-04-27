@@ -4,14 +4,14 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogJoycon, Log, All);
 
-void UJoycon::Init(hid_device* Device, EControllerType ControllerType)
+void UJoycon::Init(hid_device* InDevice, EControllerType InControllerType)
 {
-	this->Device = Device;
-	this->ControllerType = ControllerType;
+	this->Device = InDevice;
+	this->ControllerType = InControllerType;
 
 #ifdef DEBUG
-	FString ControllerStr(UEnum::GetValueAsString<EControllerType>(ControllerType));
-	UE_LOG(LogJoycon, Log, TEXT("%s Controller Created"), *ControllerStr);
+	//FString ControllerStr(UEnum::GetValueAsString<EControllerType>(ControllerType));
+	//UE_LOG(LogJoycon, Log, TEXT("%s Controller Created"), *ControllerStr);
 #endif
 }
 
@@ -70,6 +70,7 @@ void UJoycon::ApplyLEDs(int32 LEDIndex, ELEDMode LEDMode)
 
 void UJoycon::SetLEDModes(ELEDMode LED_1, ELEDMode LED_2, ELEDMode LED_3, ELEDMode LED_4)
 {
+	unsigned char Buffer[64];
 	memset(Buffer, 0, 64);
 
 	ApplyLEDs(1, LED_1);

@@ -32,7 +32,7 @@ class JOYCONINPUT_API UJoycon : public UObject
 public:
 
 	// Acts as a constructor due to NewObject<> call.
-	void Init(hid_device* Device, EControllerType ControllerType);
+	void Init(hid_device* InDevice, EControllerType InControllerType);
 
 	// Sends a command to the Joycon.
 	void SendCommand(int Command, uint8_t* Data, int Len);
@@ -76,6 +76,14 @@ public:
 	void SetPreviousButton(int InPreviousButton) {
 		this->PreviousButton = InPreviousButton;
 	}
+
+	int GetPreviousButtonType() {
+		return PreviousButtonType;
+	}
+
+	void SetPreviousButtonType(int InPreviousButtonType) {
+		this->PreviousButtonType = InPreviousButtonType;
+	}
 private:
 	// A pointer to the HID Device.
 	hid_device* Device;
@@ -83,8 +91,13 @@ private:
 	// The type of controller that this is.
 	EControllerType ControllerType;
 
-	// The button that was previously pressed. Used for holding buttons.
-	int PreviousButton;
+	// The button that was previously pressed. Used for holding or releasing buttons.
+	int PreviousButton = 0x08; // Setting to 0x08 allows thumbstick axis to work first time, as no axis is 8.
 
+	// The type of button that was previously pressed, used for holding or releasing buttons.
+	// Primary, Secondary or Axis button.
+	int PreviousButtonType;
+
+	// Prob should just not reuse buffers.
 	unsigned char Buffer[0x40];
 };

@@ -5,11 +5,11 @@ DEFINE_LOG_CATEGORY_STATIC(LogJoyconInputDevice, Log, All);
 #define LOCTEXT_NAMESPACE "JoyconInputDevice"
 
 #define DEBUG true
-#define BYTES_TO_READ 0x41
+#define BYTES_TO_READ 64
 
 // Magic Numbers & Button IDs
 #define BLUETOOTH 0
-#define GAME_BUTTON 1
+#define PRIMARY_BUTTON 1
 #define SECONDARY_BUTTON 2
 #define THUMBSTICK 3
 
@@ -31,21 +31,21 @@ DEFINE_LOG_CATEGORY_STATIC(LogJoyconInputDevice, Log, All);
 #define LEFT_JOYCON_AXIS_DOWN 0x04
 #define LEFT_JOYCON_AXIS_LEFT 0x06
 
-#define RIGHT_JOYCON_SL 0
-#define RIGHT_JOYCON_SR 0
-#define RIGHT_JOYCON_UP 0
-#define RIGHT_JOYCON_RIGHT 0
-#define RIGHT_JOYCON_DOWN 0
-#define RIGHT_JOYCON_LEFT 0
-#define RIGHT_JOYCON_ZR 0
-#define RIGHT_JOYCON_R 0
-#define RIGHT_JOYCON_PLUS 0
-#define RIGHT_JOYCON_THUMB_IN 0
-#define RIGHT_JOYCON_HOME 0
-#define RIGHT_JOYCON_AXIS_UP 0
-#define RIGHT_JOYCON_AXIS_RIGHT 0
-#define RIGHT_JOYCON_AXIS_DOWN 0
-#define RIGHT_JOYCON_AXIS_LEFT 0
+#define RIGHT_JOYCON_SL 0x10
+#define RIGHT_JOYCON_SR 0x20
+#define RIGHT_JOYCON_UP 0x08
+#define RIGHT_JOYCON_RIGHT 0x02
+#define RIGHT_JOYCON_DOWN 0x01
+#define RIGHT_JOYCON_LEFT 0x04
+#define RIGHT_JOYCON_ZR 0x80
+#define RIGHT_JOYCON_R 0x40
+#define RIGHT_JOYCON_PLUS 0x02
+#define RIGHT_JOYCON_THUMB_IN 0x08
+#define RIGHT_JOYCON_HOME 0x10
+#define RIGHT_JOYCON_AXIS_UP 0x00
+#define RIGHT_JOYCON_AXIS_RIGHT 0x02
+#define RIGHT_JOYCON_AXIS_DOWN 0x04
+#define RIGHT_JOYCON_AXIS_LEFT 0x06
 
 #define COMBINED_UP 0
 #define COMBINED_RIGHT 0
@@ -223,8 +223,8 @@ FJoyconInputDevice::FJoyconInputDevice(const TSharedRef<FGenericApplicationMessa
 	EKeys::AddKey(FKeyDetails(FLeftJoyconButton::ThumbstickAxisRight, LOCTEXT("LeftJoycon_ThumbstickRight", "Left Joycon - Thumbstick Right"), FKeyDetails::GamepadKey, NAME_LeftJoycon));
 	EKeys::AddKey(FKeyDetails(FLeftJoyconButton::ThumbstickAxisDown, LOCTEXT("LeftJoycon_ThumbstickDown", "Left Joycon - Thumbstick Down"), FKeyDetails::GamepadKey, NAME_LeftJoycon));
 	EKeys::AddKey(FKeyDetails(FLeftJoyconButton::ThumbstickAxisLeft, LOCTEXT("LeftJoycon_ThumbstickLeft", "Left Joycon - Thumbstick Left"), FKeyDetails::GamepadKey, NAME_LeftJoycon));
-	EKeys::AddKey(FKeyDetails(FLeftJoyconButton::ThumbstickAxisY, LOCTEXT("LeftJoycon_AxisY", "Left Joycon - Thumbstick Up"), FKeyDetails::GamepadKey, NAME_LeftJoycon));
-	EKeys::AddKey(FKeyDetails(FLeftJoyconButton::ThumbstickAxisX, LOCTEXT("LeftJoycon_AxisX", "Left Joycon - Thumbstick Up"), FKeyDetails::GamepadKey, NAME_LeftJoycon));
+	EKeys::AddKey(FKeyDetails(FLeftJoyconButton::ThumbstickAxisY, LOCTEXT("LeftJoycon_AxisY", "Left Joycon - Thumbstick Axis Y"), FKeyDetails::GamepadKey |  FKeyDetails::FloatAxis, NAME_LeftJoycon));
+	EKeys::AddKey(FKeyDetails(FLeftJoyconButton::ThumbstickAxisX, LOCTEXT("LeftJoycon_AxisX", "Left Joycon - Thumbstick Axis X"), FKeyDetails::GamepadKey | FKeyDetails::FloatAxis, NAME_LeftJoycon));
 
 	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ShoulderLeft, LOCTEXT("RightJoycon_ShoulderLeft", "Right Joycon - Shoulder Left"), FKeyDetails::GamepadKey, NAME_RightJoycon));
 	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ShoulderRight, LOCTEXT("RightJoycon_ShoulderRight", "Right Joycon - Shoulder Right"), FKeyDetails::GamepadKey, NAME_RightJoycon));
@@ -241,8 +241,8 @@ FJoyconInputDevice::FJoyconInputDevice(const TSharedRef<FGenericApplicationMessa
 	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ThumbstickAxisRight, LOCTEXT("RightJoycon_ThumbstickRight", "Right Joycon - Thumbstick Right"), FKeyDetails::GamepadKey, NAME_RightJoycon));
 	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ThumbstickAxisDown, LOCTEXT("RightJoycon_ThumbstickDown", "Right Joycon - Thumbstick Down"), FKeyDetails::GamepadKey, NAME_RightJoycon));
 	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ThumbstickAxisLeft, LOCTEXT("RightJoycon_ThumbstickLeft", "Right Joycon - Thumbstick Left"), FKeyDetails::GamepadKey, NAME_RightJoycon));
-	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ThumbstickAxisY, LOCTEXT("RightJoycon_AxisY", "Right Joycon - Thumbstick Up"), FKeyDetails::GamepadKey, NAME_RightJoycon));
-	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ThumbstickAxisX, LOCTEXT("RightJoycon_AxisX", "Right Joycon - Thumbstick Up"), FKeyDetails::GamepadKey, NAME_RightJoycon));
+	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ThumbstickAxisY, LOCTEXT("RightJoycon_AxisY", "Right Joycon - Thumbstick Axis Y"), FKeyDetails::GamepadKey | FKeyDetails::FloatAxis, NAME_RightJoycon));
+	EKeys::AddKey(FKeyDetails(FRightJoyconButton::ThumbstickAxisX, LOCTEXT("RightJoycon_AxisX", "Right Joycon - Thumbstick Axis X"), FKeyDetails::GamepadKey | FKeyDetails::FloatAxis, NAME_RightJoycon));
 
 	EKeys::AddKey(FKeyDetails(FJoyconButton::LeftJoycon_ShoulderLeft, LOCTEXT("Combined_Left_ShoulderLeft", "Combined Joycons - Left Joycon - Shoulder Left"), FKeyDetails::GamepadKey, NAME_Combined));
 	EKeys::AddKey(FKeyDetails(FJoyconButton::LeftJoycon_ShoulderRight, LOCTEXT("Combined_Left_ShoulderRight", "Combined Joycons - Left Joycon - Shoulder Right"), FKeyDetails::GamepadKey, NAME_Combined));
@@ -276,8 +276,8 @@ FJoyconInputDevice::FJoyconInputDevice(const TSharedRef<FGenericApplicationMessa
 	EKeys::AddKey(FKeyDetails(FJoyconButton::RightThumbstickLeft, LOCTEXT("Combined_RightThumbstickLeft", "Combined Joycons - Right Thumbstick Left"), FKeyDetails::GamepadKey, NAME_Combined));
 	EKeys::AddKey(FKeyDetails(FJoyconButton::LeftThumbstickAxisY, LOCTEXT("Combined_LeftThumbstickAxisY", "Combined Joycons - Left Thumbstick Axis Y"), FKeyDetails::GamepadKey, NAME_Combined));
 	EKeys::AddKey(FKeyDetails(FJoyconButton::LeftThumbstickAxisX, LOCTEXT("Combined_LeftThumbstickAxisX", "Combined Joycons - Left Thumbstick Axis X"), FKeyDetails::GamepadKey, NAME_Combined));
-	EKeys::AddKey(FKeyDetails(FJoyconButton::RightThumbstickAxisY, LOCTEXT("Combined_RightThumbstickAxisY", "Combined Joycons - Right Thumbstick Axis Y"), FKeyDetails::GamepadKey, NAME_Combined));
-	EKeys::AddKey(FKeyDetails(FJoyconButton::RightThumbstickAxisX, LOCTEXT("Combined_RightThumbstickAxisX", "Combined Joycons - Right Thumbstick Axis X"), FKeyDetails::GamepadKey, NAME_Combined));
+	EKeys::AddKey(FKeyDetails(FJoyconButton::RightThumbstickAxisY, LOCTEXT("Combined_RightThumbstickAxisY", "Combined Joycons - Right Thumbstick Axis Y"), FKeyDetails::GamepadKey | FKeyDetails::FloatAxis, NAME_Combined));
+	EKeys::AddKey(FKeyDetails(FJoyconButton::RightThumbstickAxisX, LOCTEXT("Combined_RightThumbstickAxisX", "Combined Joycons - Right Thumbstick Axis X"), FKeyDetails::GamepadKey | FKeyDetails::FloatAxis, NAME_Combined));
 
 	EKeys::AddKey(FKeyDetails(FProControllerButton::L, LOCTEXT("ProController_L", "Pro Controller - L"), FKeyDetails::GamepadKey, NAME_Pro));
 	EKeys::AddKey(FKeyDetails(FProControllerButton::ZL, LOCTEXT("ProController_ZL", "Pro Controller - ZL"), FKeyDetails::GamepadKey, NAME_Pro));
@@ -307,8 +307,8 @@ FJoyconInputDevice::FJoyconInputDevice(const TSharedRef<FGenericApplicationMessa
 	EKeys::AddKey(FKeyDetails(FProControllerButton::RightThumbstickLeft, LOCTEXT("ProController_RightThumbstickLeft", "Pro Controller - Right Thumbstick Left"), FKeyDetails::GamepadKey, NAME_Pro));
 	EKeys::AddKey(FKeyDetails(FProControllerButton::LeftThumbstickAxisY, LOCTEXT("ProController_LeftThumbstickAxisY", "Pro Controller - Left Thumbstick Axis Y"), FKeyDetails::GamepadKey, NAME_Pro));
 	EKeys::AddKey(FKeyDetails(FProControllerButton::LeftThumbstickAxisX, LOCTEXT("ProController_LeftThumbstickAxisX", "Pro Controller - Left Thumbstick Axis X"), FKeyDetails::GamepadKey, NAME_Pro));
-	EKeys::AddKey(FKeyDetails(FProControllerButton::RightThumbstickAxisY, LOCTEXT("ProController_RightThumbstickAxisY", "Pro Controller - Right Thumbstick Axis Y"), FKeyDetails::GamepadKey, NAME_Pro));
-	EKeys::AddKey(FKeyDetails(FProControllerButton::RightThumbstickAxisX, LOCTEXT("ProController_RightThumbstickAxisX", "Pro Controller - Right Thumbstick Axis X"), FKeyDetails::GamepadKey, NAME_Pro));
+	EKeys::AddKey(FKeyDetails(FProControllerButton::RightThumbstickAxisY, LOCTEXT("ProController_RightThumbstickAxisY", "Pro Controller - Right Thumbstick Axis Y"), FKeyDetails::GamepadKey | FKeyDetails::FloatAxis, NAME_Pro));
+	EKeys::AddKey(FKeyDetails(FProControllerButton::RightThumbstickAxisX, LOCTEXT("ProController_RightThumbstickAxisX", "Pro Controller - Right Thumbstick Axis X"), FKeyDetails::GamepadKey | FKeyDetails::FloatAxis, NAME_Pro));
 
 #ifdef DEBUG
 	UE_LOG(LogJoyconInputDevice, Log, TEXT("Inputs Mapped."));
@@ -322,10 +322,10 @@ void FJoyconInputDevice::Tick(float DeltaTime)
 
 void FJoyconInputDevice::SendControllerEvents()
 {
-	if (!FJoyconInputModule::GetJoycons().IsValidIndex(0)) return;
+	if (!FJoyconInputModule::Joycons.IsValidIndex(0)) return;
 	
 	int index = 0;
-	for (UJoycon* Joycon : FJoyconInputModule::GetJoycons()) {
+	for (UJoycon* Joycon : FJoyconInputModule::Joycons) {
 		if (Joycon->GetDevice() == nullptr) return;
 		if (HandleInput(index, Joycon)) break;
 		index++;
@@ -334,13 +334,17 @@ void FJoyconInputDevice::SendControllerEvents()
 
 bool FJoyconInputDevice::HandleInput(int Index, UJoycon* Joycon)
 {
+	if (!Joycon->IsValidLowLevel()) return false;
+
 	unsigned char Packet[BYTES_TO_READ];
-	hid_set_nonblocking(Joycon->GetDevice(), 1);
+	if (hid_set_nonblocking(Joycon->GetDevice(), 1) == -1) return false;
 	memset(Packet, 0, BYTES_TO_READ);
-	hid_read(Joycon->GetDevice(), Packet, BYTES_TO_READ);
+	if (hid_read(Joycon->GetDevice(), Packet, BYTES_TO_READ) == -1) return false;
+
+	if (Packet[BLUETOOTH] != BLUETOOTH_BUTTON) return false;
 
 #ifdef DEBUG
-	// Allows the packet to be easily read, adding a colon to separate each bit.
+	// Allows the packet to be easily read, adding a colon to separate each byte.
 	FString PacketStr;
 
 	for (size_t i = 0; i < sizeof(Packet) - 1; i++) {
@@ -353,11 +357,12 @@ bool FJoyconInputDevice::HandleInput(int Index, UJoycon* Joycon)
 	UE_LOG(LogJoyconInputDevice, Log, TEXT("Packet Info: %s"), *PacketStr);
 #endif
 
-	if (Packet[BLUETOOTH] != BLUETOOTH_BUTTON) return;
 	if (Joycon->GetControllerType() == EControllerType::Left) return HandleLeftJoyconInput(Index, Joycon, Packet);
 	if (Joycon->GetControllerType() == EControllerType::Right) return HandleRightJoyconInput(Index, Joycon, Packet);
 	if (Joycon->GetControllerType() == EControllerType::Combined) return HandleCombinedJoyconInput(Index, Joycon, Packet);
 	if (Joycon->GetControllerType() == EControllerType::Pro) return HandleProControllerInput(Index, Joycon, Packet);
+
+	return false;
 }
 
 bool FJoyconInputDevice::HandleLeftJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet)
@@ -365,101 +370,228 @@ bool FJoyconInputDevice::HandleLeftJoyconInput(int Index, UJoycon* Joycon, uint8
 #ifdef DEBUG
 	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Left Joycon Input"));
 #endif
-	if (Packet[GAME_BUTTON] == LEFT_JOYCON_SL) {
+	
+	// Checks if a button was pressed, or if the previous button was released. Then sends the input to the engine. 
+	// Uses a previous button type as previous buttons can have the same 'id'.
+	if (Packet[PRIMARY_BUTTON] == LEFT_JOYCON_SL || (Joycon->GetPreviousButton() == LEFT_JOYCON_SL && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_SL) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ShoulderLeft.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1); // Reset the previous button when the button is released.
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ShoulderLeft.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_SL);
 		}
 
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
 		return true;
 	}
 
-	if (Packet[GAME_BUTTON] == LEFT_JOYCON_SR) {
+	if (Packet[PRIMARY_BUTTON] == LEFT_JOYCON_SR || (Joycon->GetPreviousButton() == LEFT_JOYCON_SR && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_SR) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ShoulderRight.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ShoulderRight.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_SR);
 		}
 
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
 		return true;
 	}
 
-	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_UP) {
+	if (Packet[PRIMARY_BUTTON] == LEFT_JOYCON_DPAD_UP || (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_UP && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_UP) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Up.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Up.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_UP);
 		}
 
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
 		return true;
 	}
 
-	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_RIGHT) {
+	if (Packet[PRIMARY_BUTTON] == LEFT_JOYCON_DPAD_RIGHT || (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_RIGHT && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_RIGHT) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Right.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Right.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_RIGHT);
 		}
 
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
 		return true;
 	}
 
-	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_DOWN) {
+	if (Packet[PRIMARY_BUTTON] == LEFT_JOYCON_DPAD_DOWN || (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_DOWN && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_DOWN) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Down.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Down.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_DOWN);
 		}
 
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
 		return true;
 	}
 
-	if (Packet[GAME_BUTTON] == LEFT_JOYCON_DPAD_LEFT) {
+	if (Packet[PRIMARY_BUTTON] == LEFT_JOYCON_DPAD_LEFT || (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_LEFT && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_DPAD_LEFT) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Left.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Left.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_DPAD_LEFT);
 		}
 
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
 		return true;
 	}
 
-	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_ZL) {
+	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_ZL || (Joycon->GetPreviousButton() == LEFT_JOYCON_ZL && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_ZL) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Trigger.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Trigger.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_ZL);
 		}
 
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
 		return true;
 	}
 
-	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_L) {
+	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_L || (Joycon->GetPreviousButton() == LEFT_JOYCON_L && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
 		if (Joycon->GetPreviousButton() == LEFT_JOYCON_L) {
 			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Bumper.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
 		}
 		else {
 			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Bumper.GetFName(), Index, false);
 			Joycon->SetPreviousButton(LEFT_JOYCON_L);
 		}
 
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
 		return true;
 	}
+
+	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_MINUS || (Joycon->GetPreviousButton() == LEFT_JOYCON_MINUS && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_MINUS) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Minus.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Minus.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_MINUS);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_THUMB_IN || (Joycon->GetPreviousButton() == LEFT_JOYCON_THUMB_IN && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_THUMB_IN) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ThumbstickIn.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ThumbstickIn.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_THUMB_IN);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == LEFT_JOYCON_CAPTURE || (Joycon->GetPreviousButton() == LEFT_JOYCON_CAPTURE && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_CAPTURE) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::Capture.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::Capture.GetFName(), Index, false);
+			Joycon->SetPreviousButton(LEFT_JOYCON_CAPTURE);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == LEFT_JOYCON_AXIS_UP || (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_UP && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_UP) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ThumbstickAxisUp.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisY.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ThumbstickAxisUp.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisY.GetFName(), Index, 1.0);
+			Joycon->SetPreviousButton(LEFT_JOYCON_AXIS_UP);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == LEFT_JOYCON_AXIS_RIGHT || (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_RIGHT && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_RIGHT) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ThumbstickAxisRight.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisX.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ThumbstickAxisRight.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisX.GetFName(), Index, 1.0);
+			Joycon->SetPreviousButton(LEFT_JOYCON_AXIS_RIGHT);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == LEFT_JOYCON_AXIS_DOWN || (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_DOWN && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_DOWN) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ThumbstickAxisDown.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisY.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ThumbstickAxisDown.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisY.GetFName(), Index, -1.0);
+			Joycon->SetPreviousButton(LEFT_JOYCON_AXIS_DOWN);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == LEFT_JOYCON_AXIS_LEFT || (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_LEFT && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == LEFT_JOYCON_AXIS_LEFT) {
+			MessageHandler->OnControllerButtonReleased(FLeftJoyconButton::ThumbstickAxisLeft.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisX.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FLeftJoyconButton::ThumbstickAxisLeft.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FLeftJoyconButton::ThumbstickAxisX.GetFName(), Index, -1.0);
+			Joycon->SetPreviousButton(LEFT_JOYCON_AXIS_LEFT);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	return false;
 }
 
 bool FJoyconInputDevice::HandleRightJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet)
@@ -467,6 +599,226 @@ bool FJoyconInputDevice::HandleRightJoyconInput(int Index, UJoycon* Joycon, uint
 #ifdef DEBUG
 	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Right Joycon Input"));
 #endif
+
+	if (Packet[PRIMARY_BUTTON] == RIGHT_JOYCON_SL || (Joycon->GetPreviousButton() == RIGHT_JOYCON_SL && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_SL) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::ShoulderRight.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1); // Reset the previous button when the button is released.
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::ShoulderRight.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_SL);
+		}
+
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[PRIMARY_BUTTON] == RIGHT_JOYCON_SR || (Joycon->GetPreviousButton() == RIGHT_JOYCON_SR && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_SR) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::ShoulderRight.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::ShoulderRight.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_SR);
+		}
+
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[PRIMARY_BUTTON] == RIGHT_JOYCON_UP || (Joycon->GetPreviousButton() == RIGHT_JOYCON_UP && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_UP) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Up.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Up.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_UP);
+		}
+
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[PRIMARY_BUTTON] == RIGHT_JOYCON_RIGHT || (Joycon->GetPreviousButton() == RIGHT_JOYCON_RIGHT && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_RIGHT) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Right.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Right.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_RIGHT);
+		}
+
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[PRIMARY_BUTTON] == RIGHT_JOYCON_DOWN || (Joycon->GetPreviousButton() == RIGHT_JOYCON_DOWN && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_DOWN) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Down.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Down.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_DOWN);
+		}
+
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[PRIMARY_BUTTON] == RIGHT_JOYCON_RIGHT || (Joycon->GetPreviousButton() == RIGHT_JOYCON_RIGHT && Joycon->GetPreviousButtonType() == PRIMARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_RIGHT) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Right.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Right.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_RIGHT);
+		}
+
+		Joycon->SetPreviousButtonType(PRIMARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == RIGHT_JOYCON_ZR || (Joycon->GetPreviousButton() == RIGHT_JOYCON_ZR && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_ZR) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Trigger.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Trigger.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_ZR);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == RIGHT_JOYCON_R || (Joycon->GetPreviousButton() == RIGHT_JOYCON_R && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_R) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Bumper.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Bumper.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_R);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == RIGHT_JOYCON_PLUS || (Joycon->GetPreviousButton() == RIGHT_JOYCON_PLUS && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_PLUS) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Plus.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Plus.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_PLUS);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == RIGHT_JOYCON_THUMB_IN || (Joycon->GetPreviousButton() == RIGHT_JOYCON_THUMB_IN && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_THUMB_IN) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::ThumbstickIn.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::ThumbstickIn.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_THUMB_IN);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[SECONDARY_BUTTON] == RIGHT_JOYCON_HOME || (Joycon->GetPreviousButton() == RIGHT_JOYCON_HOME && Joycon->GetPreviousButtonType() == SECONDARY_BUTTON)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_HOME) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::Home.GetFName(), Index, false);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::Home.GetFName(), Index, false);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_HOME);
+		}
+
+		Joycon->SetPreviousButtonType(SECONDARY_BUTTON);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == RIGHT_JOYCON_AXIS_UP || (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_UP && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_UP) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::ThumbstickAxisUp.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisY.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::ThumbstickAxisUp.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisY.GetFName(), Index, 1.0);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_AXIS_UP);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == RIGHT_JOYCON_AXIS_RIGHT || (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_RIGHT && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_RIGHT) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::ThumbstickAxisRight.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisX.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::ThumbstickAxisRight.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisX.GetFName(), Index, 1.0);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_AXIS_RIGHT);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == RIGHT_JOYCON_AXIS_DOWN || (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_DOWN && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_DOWN) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::ThumbstickAxisDown.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisY.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::ThumbstickAxisDown.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisY.GetFName(), Index, -1.0);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_AXIS_DOWN);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	if (Packet[THUMBSTICK] == RIGHT_JOYCON_AXIS_RIGHT || (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_RIGHT && Joycon->GetPreviousButtonType() == THUMBSTICK)) {
+		if (Joycon->GetPreviousButton() == RIGHT_JOYCON_AXIS_RIGHT) {
+			MessageHandler->OnControllerButtonReleased(FRightJoyconButton::ThumbstickAxisRight.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisX.GetFName(), Index, 0.0);
+			Joycon->SetPreviousButton(-1);
+		}
+		else {
+			MessageHandler->OnControllerButtonPressed(FRightJoyconButton::ThumbstickAxisRight.GetFName(), Index, false);
+			MessageHandler->OnControllerAnalog(FRightJoyconButton::ThumbstickAxisX.GetFName(), Index, -1.0);
+			Joycon->SetPreviousButton(RIGHT_JOYCON_AXIS_RIGHT);
+		}
+
+		Joycon->SetPreviousButtonType(THUMBSTICK);
+		return true;
+	}
+
+	return false;
 }
 
 bool FJoyconInputDevice::HandleCombinedJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet)
@@ -474,6 +826,8 @@ bool FJoyconInputDevice::HandleCombinedJoyconInput(int Index, UJoycon* Joycon, u
 #ifdef DEBUG
 	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Combined Joycon Input"));
 #endif
+
+	return false;
 }
 
 bool FJoyconInputDevice::HandleProControllerInput(int Index, UJoycon* Joycon, uint8_t* Packet)
@@ -481,11 +835,13 @@ bool FJoyconInputDevice::HandleProControllerInput(int Index, UJoycon* Joycon, ui
 #ifdef DEBUG
 	UE_LOG(LogJoyconInputDevice, Log, TEXT("Handling Pro Controller Input"));
 #endif
+
+	return false;
 }
 
 void FJoyconInputDevice::SetMessageHandler(const TSharedRef<FGenericApplicationMessageHandler>& InMessageHandler)
 {
-
+	this->MessageHandler = InMessageHandler;
 }
 
 bool FJoyconInputDevice::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar)

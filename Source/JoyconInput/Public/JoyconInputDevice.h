@@ -7,6 +7,7 @@
 
 class FJoyconInputDevice : public IInputDevice
 {
+public:
 	FJoyconInputDevice(const TSharedRef<FGenericApplicationMessageHandler>& MessageHandler);
 
 	virtual void Tick(float DeltaTime) override;

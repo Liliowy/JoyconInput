@@ -2,6 +2,7 @@
 
 #include "IJoyconInputModule.h"
 #include "Joycon.h"
+#include "JoyconInputDevice.h"
 
 class FJoyconInputModule : public IJoyconInputModule
 {
@@ -12,10 +13,6 @@ public:
 
 	TSharedPtr<class FJoyconInputDevice> JoyconInputDevice;
 
-	static TArray<UJoycon*> GetJoycons() {
-		return Joycons;
-	}
-
-private:
+public:
 	static TArray<UJoycon*> Joycons;
 };
