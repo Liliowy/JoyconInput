@@ -1,103 +1,147 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "hidapi.h"
+
+#include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+
 #include "Joycon.generated.h"
 
-// How a player LED can act.
+/*
+The state that a Player LED can be in.
+*/
 UENUM(BlueprintType)
-enum class ELEDMode : uint8
+enum class ELEDState : uint8
 {
-	Off, // The LED is off.
-	On, // The LED is on.
-	Flashing // The LED is flashing.
+	Off,
+	On,
+	Flashing
 };
 
-// The type of switch controller.
+/*
+The type of controller that this is.
+*/
 UENUM(BlueprintType)
 enum class EControllerType : uint8
 {
-	Left, // The left Joycon.
-	Right, // The right Joycon.
-	Combined, // Both Joycons combined.
-	Pro // The Pro Controller.
+	Left,
+	Right,
+	Combined,
+	Grip,
+	Pro
 };
 
 UCLASS()
 class JOYCONINPUT_API UJoycon : public UObject
 {
 	GENERATED_BODY()
-	
+
 public:
 
-	// Acts as a constructor due to NewObject<> call.
-	void Init(hid_device* InDevice, EControllerType InControllerType);
-
-	// Sends a command to the Joycon.
-	void SendCommand(int Command, uint8_t* Data, int Len);
-
-	// Sends a command and subcommand to the Joycon.
-	void SendSubcommand(int Command, int Subcommand, uint8_t* Data, int Len);
-
-	// Gets the response from a command.
-	void GetResponse(unsigned char* Buf, int Len);
-
-	// Applies the LED changes.
-	void ApplyLEDs(int32 LEDIndex, ELEDMode LEDMode);
-
-	// Blueprint node to set the modes of the LEDs.
-	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
-	void SetLEDModes(ELEDMode LED_1, ELEDMode LED_2, ELEDMode LED_3, ELEDMode LED4);
+	/*
+	Initialises this controller.
+	*/
+	void Init(hid_device* InDevice, hid_device_info* InInfo, EControllerType InControllerType);
 
 	/*
-		To Do:
-		GetRotation()
-		GetAcceleration()
-		
-		Rumble / Vibrate, IR Sensor, NFC Reader.
+	Sends a command to the controller.
 	*/
+	void SendCommand(int Command, uint8_t* Packet, int Length);
 
-	// Returns the HID Device.
+	/*
+	Sends a command and subcommand to the controller.
+	*/
+	void SendSubcommand(int Command, int Subcommand, uint8_t* Packet, int Length);
+
+	/*
+	Gets the response from a command.
+	*/
+	void GetResponse(unsigned char* Buffer, int Length);
+
+	/*
+	Applies the changes to the Player LEDs.
+	*/
+	void ApplyLEDChanges(int32 LEDIndex, ELEDState LEDState, unsigned char* Buffer);
+
+	/*
+	Sets the state of the Player LEDs.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
+	void SetLEDStates(ELEDState LED_1, ELEDState LED_2, ELEDState LED_3, ELEDState LED_4);
+
+	/*
+	Sends a vibration to the controller.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
+	void Rumble(int Frequency, int Intensity);
+
+	/*
+	Sets the state of the Home LED.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
+	void SetHomeLEDState();
+
+	/*
+	Gets the colour of the controller.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
+	void GetJoyconColor(FLinearColor& OutColor) {
+		OutColor = this->Color;
+	}
+
+	/*
+	Enables NFC input.
+	*/
+	/*
+	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
+	void EnableNFC();*/
+
+	/*
+	Enables IR input.
+	
+	UFUNCTION(BlueprintCallable, Category = "JoyconInput")
+	void EnableIR();*/
+
 	hid_device* GetDevice() {
 		return Device;
 	}
 
-	// Returns the type of controller that this is.
+	hid_device_info* GetDeviceInfo() {
+		return DeviceInfo;
+	}
+
+	/*UFUNCTION(BlueprintCallable, Category = "JoyconInput")
+	void GetControllerType(EControllerType& OutControllerType) {
+		OutControllerType = ControllerType;
+	}*/
+
 	EControllerType GetControllerType() {
 		return ControllerType;
 	}
 
-	// Returns the button that was previously pressed.
-	int GetPreviousButton() {
-		return PreviousButton;
+	int* GetPreviousPrimaryButtons() {
+		return PreviousPrimaryButtons;
 	}
 
-	void SetPreviousButton(int InPreviousButton) {
-		this->PreviousButton = InPreviousButton;
+	int* GetPreviousSecondaryButtons() {
+		return PreviousSecondaryButtons;
 	}
 
-	int GetPreviousButtonType() {
-		return PreviousButtonType;
+	int* GetPreviousAxis() {
+		return PreviousAxis;
 	}
 
-	void SetPreviousButtonType(int InPreviousButtonType) {
-		this->PreviousButtonType = InPreviousButtonType;
-	}
 private:
-	// A pointer to the HID Device.
 	hid_device* Device;
-
-	// The type of controller that this is.
+	hid_device_info* DeviceInfo;
 	EControllerType ControllerType;
+	FLinearColor Color;
+	int PreviousPrimaryButtons[12];
+	int PreviousSecondaryButtons[10];
+	int PreviousAxis[6];
 
-	// The button that was previously pressed. Used for holding or releasing buttons.
-	int PreviousButton = 0x08; // Setting to 0x08 allows thumbstick axis to work first time, as no axis is 8.
-
-	// The type of button that was previously pressed, used for holding or releasing buttons.
-	// Primary, Secondary or Axis button.
-	int PreviousButtonType;
-
-	// Prob should just not reuse buffers.
-	unsigned char Buffer[0x40];
+public:
+	// Bruh
+	uint16_t stick_cal_x[0x3];
+	uint16_t stick_cal_y[0x3];
 };

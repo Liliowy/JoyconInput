@@ -4,7 +4,7 @@ IMPLEMENT_MODULE(FJoyconInputModule, JoyconInput);
 
 #define LOCTEXT_NAMESPACE "FJoyconInputModule"
 
-TArray<UJoycon*> FJoyconInputModule::Joycons;
+TArray<UJoycon*> FJoyconInputModule::Joycons = TArray<UJoycon*>();
 
 TSharedPtr<class IInputDevice> FJoyconInputModule::CreateInputDevice(const TSharedRef<FGenericApplicationMessageHandler>& InMessageHandler)
 {
@@ -14,13 +14,12 @@ TSharedPtr<class IInputDevice> FJoyconInputModule::CreateInputDevice(const TShar
 
 void FJoyconInputModule::ShutdownModule()
 {
-	for (UJoycon* Joycon : FJoyconInputModule::Joycons) {
-		hid_set_nonblocking(Joycon->GetDevice(), 1);
-		hid_close(Joycon->GetDevice());
-	}
+	//for (UJoycon* Joycon : FJoyconInputModule::Joycons) {
+		//if (Joycon->GetDevice() == nullptr) continue;
+	//	if (hid_set_nonblocking(Joycon->GetDevice(), 1) == -1) continue;
+	//	hid_close(Joycon->GetDevice());
+//	}
 	hid_exit();
-
-	FJoyconInputModule::JoyconInputDevice->~FJoyconInputDevice();
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -4,13 +4,14 @@ An Unreal Engine 4 Plugin that adds input device support for Nintendo Switch con
 ## Features
 * Button Presses
 * Button Releases
-* Player LED Control (Well, it was working)
+* Thumbsticks
+* Player LED Control
+* Vibration
 
 ## To Do
 * Joycon Rotation
 * Joycon Battery
 * Joycon Acceleration
-* Send Rumble Commands
 * IR Sensor
 * NFC Reader?
 * Combining Joycons

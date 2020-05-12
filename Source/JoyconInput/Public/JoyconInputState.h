@@ -20,6 +20,10 @@ struct FLeftJoyconButton
 	static const FKey ThumbstickAxisRight; // Thumbstick Right
 	static const FKey ThumbstickAxisDown; // Thumbstick Down
 	static const FKey ThumbstickAxisLeft; // Thumbstick Left
+	static const FKey ThumbstickAxisUpRight; // Diagonal Up Right
+	static const FKey ThumbstickAxisUpLeft; // Diagonal Up Left
+	static const FKey ThumbstickAxisDownRight; // Diagonal Down Right
+	static const FKey ThumbstickAxisDownLeft; // Diagonal Down Left
 	static const FKey ThumbstickAxisY; // Thumbstick Y Axis
 	static const FKey ThumbstickAxisX; // Thumbstick X Axis
 
@@ -53,6 +57,10 @@ struct FRightJoyconButton
 	static const FKey ThumbstickAxisRight; // Thumbstick Right
 	static const FKey ThumbstickAxisDown; // Thumbstick Down
 	static const FKey ThumbstickAxisLeft; // Thumbstick Left
+	static const FKey ThumbstickAxisUpRight; // Diagonal Up Right
+	static const FKey ThumbstickAxisUpLeft; // Diagonal Up Left
+	static const FKey ThumbstickAxisDownRight; // Diagonal Down Right
+	static const FKey ThumbstickAxisDownLeft; // Diagonal Down Left
 	static const FKey ThumbstickAxisY; // Thumbstick Y Axis
 	static const FKey ThumbstickAxisX; // Thumbstick X Axis
 
@@ -92,11 +100,19 @@ struct FJoyconButton
 	static const FKey LeftThumbstickRight;
 	static const FKey LeftThumbstickDown;
 	static const FKey LeftThumbstickLeft;
+	static const FKey LeftThumbstickUpRight; 
+	static const FKey LeftThumbstickUpLeft;
+	static const FKey LeftThumbstickDownRight;
+	static const FKey LeftThumbstickDownLeft;
 
 	static const FKey RightThumbstickUp;
 	static const FKey RightThumbstickRight;
 	static const FKey RightThumbstickDown;
 	static const FKey RightThumbstickLeft;
+	static const FKey RightThumbstickUpRight;
+	static const FKey RightThumbstickUpLeft;
+	static const FKey RightThumbstickDownRight;
+	static const FKey RightThumbstickDownLeft;
 
 	static const FKey LeftThumbstickAxisY;
 	static const FKey LeftThumbstickAxisX;
@@ -140,11 +156,19 @@ struct FProControllerButton
 	static const FKey LeftThumbstickRight;
 	static const FKey LeftThumbstickDown;
 	static const FKey LeftThumbstickLeft;
+	static const FKey LeftThumbstickUpRight;
+	static const FKey LeftThumbstickUpLeft;
+	static const FKey LeftThumbstickDownRight;
+	static const FKey LeftThumbstickDownLeft;
 
 	static const FKey RightThumbstickUp;
 	static const FKey RightThumbstickRight;
 	static const FKey RightThumbstickDown;
 	static const FKey RightThumbstickLeft;
+	static const FKey RightThumbstickUpRight;
+	static const FKey RightThumbstickUpLeft;
+	static const FKey RightThumbstickDownRight;
+	static const FKey RightThumbstickDownLeft;
 
 	static const FKey LeftThumbstickAxisY;
 	static const FKey LeftThumbstickAxisX;
