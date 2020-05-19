@@ -18,7 +18,7 @@ An Unreal Engine 4 Plugin that adds input device support for Nintendo Switch con
 * Pro Controller Support
 
 ## Credits / Thanks
-[dukeNukem's Reverse Engineering](https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/)
+[dekuNukem's Reverse Engineering](https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/)
 
 [SwitchBrew - Joy-Con](https://switchbrew.org/wiki/Joy-Con)
 

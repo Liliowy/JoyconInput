@@ -25,10 +25,7 @@ UENUM(BlueprintType)
 enum class EControllerType : uint8
 {
 	Left,
-	Right,
-	Combined,
-	Grip,
-	Pro
+	Right
 };
 
 UCLASS()
@@ -37,7 +34,6 @@ class JOYCONINPUT_API UJoycon : public UObject
 	GENERATED_BODY()
 
 public:
-
 	/*
 	Initialises this controller.
 	*/
@@ -119,29 +115,20 @@ public:
 		return ControllerType;
 	}
 
-	int* GetPreviousPrimaryButtons() {
-		return PreviousPrimaryButtons;
+	TArray<int32> GetPreviousButtons() {
+		return PreviousButtons;
 	}
 
-	int* GetPreviousSecondaryButtons() {
-		return PreviousSecondaryButtons;
+	TArray<int32> GetPreviousSharedButtons() {
+		return PreviousSharedButtons;
 	}
 
-	int* GetPreviousAxis() {
-		return PreviousAxis;
-	}
+	TArray<int32> PreviousButtons;
+	TArray<int32> PreviousSharedButtons;
 
 private:
 	hid_device* Device;
 	hid_device_info* DeviceInfo;
 	EControllerType ControllerType;
 	FLinearColor Color;
-	int PreviousPrimaryButtons[12];
-	int PreviousSecondaryButtons[10];
-	int PreviousAxis[6];
-
-public:
-	// Bruh
-	uint16_t stick_cal_x[0x3];
-	uint16_t stick_cal_y[0x3];
 };

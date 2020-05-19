@@ -1,5 +1,7 @@
 #include "JoyconFunctionLibrary.h"
 
+#include "Engine/Engine.h"
+
 #define JOYCON_VENDOR 0x57E
 #define LEFT_JOYCON 0x2006
 #define RIGHT_JOYCON 0x2007
@@ -7,7 +9,7 @@
 
 void UJoyconFunctionLibrary::ConnectJoycons(bool& Success, int32& Count)
 {
-	FJoyconInputModule::Joycons.Empty();
+	FJoyconInputModule::Joycons = TArray<UJoycon*>();
 
 	hid_device_info* Devices = hid_enumerate(JOYCON_VENDOR, 0x00);
 
@@ -28,9 +30,6 @@ void UJoyconFunctionLibrary::ConnectJoycons(bool& Success, int32& Count)
 		case RIGHT_JOYCON:
 			Joycon->Init(hid_open_path(Device->path), Device, EControllerType::Right);
 			break;
-		case PRO_CONTROLLER:
-			Joycon->Init(hid_open_path(Device->path), Device, EControllerType::Pro);
-			break;
 		}
 
 		FJoyconInputModule::Joycons.Add(Joycon);
@@ -46,15 +45,16 @@ void UJoyconFunctionLibrary::ConnectJoycons(bool& Success, int32& Count)
 void UJoyconFunctionLibrary::DisconnectJoycons(bool& Success)
 {
 	for (UJoycon* Joycon : FJoyconInputModule::Joycons) {
+		if (!Joycon) continue;
 		hid_close(Joycon->GetDevice());
 	}
-
+	
 	Success = (hid_exit() == 0);
 }
 
 void UJoyconFunctionLibrary::GetJoycon(int32 ControllerId, UJoycon*& Joycon)
 {
-	FJoyconInputModule::Joycons[ControllerId];
+	Joycon = FJoyconInputModule::Joycons[ControllerId];
 }
 
 void UJoyconFunctionLibrary::GetJoycons(TArray<UJoycon*>& Joycons)

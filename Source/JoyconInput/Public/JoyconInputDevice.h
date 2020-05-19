@@ -4,7 +4,7 @@
 #include "JoyconInputState.h"
 
 #include "InputDevice/Public/IInputDevice.h"
-#include "OutputDevice.h"
+#include "Misc/OutputDevice.h"
 
 class FJoyconInputDevice : public IInputDevice
 {
@@ -23,34 +23,14 @@ public:
 
 	virtual ~FJoyconInputDevice();
 
-	void CalcAnalogStick2
-	(
-		float& pOutX,       // out: resulting stick X value
-		float& pOutY,       // out: resulting stick Y value
-		uint16_t x,              // in: initial stick X value
-		uint16_t y,              // in: initial stick Y value
-		uint16_t x_calc[3],      // calc -X, CenterX, +X
-		uint16_t y_calc[3]       // calc -Y, CenterY, +Y
-	);
-
 private:
 	bool HandleInput(int Index, UJoycon* Joycon);
 	bool HandleLeftJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet);
 	bool HandleRightJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet);
-	bool HandleCombinedJoyconInput(int Index, UJoycon* Joycon, uint8_t* Packet);
-	bool HandleProControllerInput(int Index, UJoycon* Joycon, uint8_t* Packet);
 
-	TMap<int, FName> LeftPrimaryButtons;
-	TMap<int, FName> LeftSecondaryButtons;
-	TMap<int, FName> LeftAxisButtons;
-
-	TMap<int, FName> RightPrimaryButtons;
-	TMap<int, FName> RightSecondaryButtons;
-	TMap<int, FName> RightAxisButtons;
-
-	TMap<int, FName> ProPrimaryButtons;
-	TMap<int, FName> ProSecondaryButtons;
-	TMap<int, FName> ProAxisButtons;
+	TMap<int32, FName> LeftButtons;
+	TMap<int32, FName> RightButtons;
+	TMap<int32, FName> SharedButtons;
 
 	TSharedRef<FGenericApplicationMessageHandler> MessageHandler;
 };

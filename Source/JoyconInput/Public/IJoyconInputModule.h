@@ -2,7 +2,7 @@
 
 #include "InputCoreTypes.h"
 #include "InputDevice/Public/IInputDeviceModule.h"
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 
 class IJoyconInputModule : public IInputDeviceModule
 {
